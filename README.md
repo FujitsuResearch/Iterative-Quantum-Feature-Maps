@@ -10,6 +10,7 @@ Link: https://arxiv.org/pdf/2506.19461
 ```bash
 git clone https://github.com/FujitsuResearch/Iterative-Quantum-Feature-Maps.git
 cd Iterative-Quantum-Feature-Maps
+```
 
 2. **Install the required packages for Python (tested with Python v3.10.12 on Linux)**
 ```bash
