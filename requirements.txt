@@ -34,6 +34,7 @@ imagesize==1.4.1
 importlib_metadata==8.5.0
 importlib_resources==6.4.5
 Jinja2==3.1.5
+joblib==1.5.1
 jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
 jupyter_client==8.6.3
@@ -42,6 +43,7 @@ jupyterlab_pygments==0.3.0
 keras==2.13.1
 kiwisolver==1.4.7
 libclang==18.1.1
+llvmlite==0.46.0
 loguru==0.7.3
 Markdown==3.7
 MarkupSafe==2.1.5
@@ -57,6 +59,7 @@ nbconvert==7.16.6
 nbformat==5.10.4
 nbsphinx==0.9.6
 networkx==3.1
+numba==0.64.0
 numpy==1.24.3
 nvidia-cublas-cu12==12.1.3.1
 nvidia-cuda-cupti-cu12==12.1.105
@@ -91,6 +94,7 @@ pycparser==2.22
 Pygments==2.19.1
 PyJWT==2.9.0
 pylatexenc==2.10
+pynndescent==0.6.0
 pyparsing==3.1.4
 pyscf==2.8.0
 pyspnego==0.11.2
@@ -110,6 +114,7 @@ requests_ntlm==1.3.0
 rpds-py==0.20.1
 rsa==4.9
 rustworkx==0.15.1
+scikit-learn==1.6.1
 scipy==1.10.1
 seaborn==0.13.2
 six==1.17.0
@@ -133,6 +138,7 @@ tensorflow-estimator==2.13.0
 tensorflow-io-gcs-filesystem==0.34.0
 tensorpack==0.11
 termcolor==2.4.0
+threadpoolctl==3.6.0
 tinycss2==1.2.1
 toml==0.10.2
 torch==2.1.2
@@ -146,6 +152,7 @@ traitlets==5.14.3
 triton==2.1.0
 typing_extensions==4.5.0
 tzdata==2025.1
+umap-learn==0.5.11
 urllib3==2.2.3
 webencodings==0.5.1
 websocket-client==1.8.0
