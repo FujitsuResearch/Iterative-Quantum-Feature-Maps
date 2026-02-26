@@ -15,7 +15,7 @@ cd Iterative-Quantum-Feature-Maps
 2. **Install the required packages for Python (tested with Python v3.10.12 on Linux)**
 ```bash
 # Create an environment
-python -m venv .venv
+python3 -m venv .venv
 
 # Activate the environment
 source .venv/bin/activate
