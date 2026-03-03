@@ -19,7 +19,7 @@ import torch.utils.data
 from utils import *
 from iqfm_utils import *
 from model_base import Model
-from effective_dimension import EffectiveDimension
+# from effective_dimension import EffectiveDimension
 from loginit import get_logger_parent_folder
 
 # For torch quantum
@@ -28,9 +28,6 @@ import torchquantum.functional as tqf
 from torchquantum.measurement import expval_joint_analytical, expval_joint_sampling_grouping
 
 from torch.utils.data import TensorDataset, DataLoader
-
-# from sklearn.decomposition import PCA
-# import umap
 
 class Layer(nn.Linear):
     def __init__(self, linear_in_fes, linear_out_fes, 
@@ -1015,24 +1012,22 @@ class DeepNet(Model, torch.nn.Module):
           input_dim = feats.size(1)
           unique_labels = labels.unique().tolist()
           num_classes = len(unique_labels)
+          
+          # When using UMAP, please restore the following commented-out code.
+          # import umap  
 
-          # # PCA analysis
-          # n_components = 2
-          # pca = PCA(n_components=n_components)
-          # pca_result = pca.fit_transform(combined_g)
+          # umap_model = umap.UMAP(
+          #     n_components=2,
+          #     random_state=0
+          # )
+          # umap_result = umap_model.fit_transform(feats)
 
-          # # UMAP
-          # umap_model = umap.UMAP(n_components=n_components)
-          # umap_result = umap_model.fit_transform(combined_g)
           
           # # Save the results to a log file.
           # if self.logger is not None:
-          #   self.logger.info(f'pca_result:{pca_result.tolist()}')
-          #   self.logger.info(f'pca_explained_variance_ratio:{pca.explained_variance_ratio_.tolist()}')
           #   self.logger.info(f'umap_result:{umap_result.tolist()}')   
           #   self.logger.info(f'input_dim:{input_dim}') 
-          #   # self.logger.info(f'layer_dim:{layer_dim}')  
-          #   self.logger.info(f'train_labels_qpm:{train_labels_qpm}')    
+          #   self.logger.info(f'train_labels_qpm:{labels}')
           
           break
 
