@@ -19,7 +19,7 @@ import torch.utils.data
 from utils import *
 from iqfm_utils import *
 from model_base import Model
-# from effective_dimension import EffectiveDimension
+from effective_dimension import EffectiveDimension
 from loginit import get_logger_parent_folder
 
 # For torch quantum
