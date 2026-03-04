@@ -1014,20 +1014,20 @@ class DeepNet(Model, torch.nn.Module):
           num_classes = len(unique_labels)
           
           # When using UMAP, please restore the following commented-out code.
-          # import umap  
+          import umap  
 
-          # umap_model = umap.UMAP(
-          #     n_components=2,
-          #     random_state=0
-          # )
-          # umap_result = umap_model.fit_transform(feats)
+          umap_model = umap.UMAP(
+              n_components=2,
+              random_state=0
+          )
+          umap_result = umap_model.fit_transform(feats)
 
           
-          # # Save the results to a log file.
-          # if self.logger is not None:
-          #   self.logger.info(f'umap_result:{umap_result.tolist()}')   
-          #   self.logger.info(f'input_dim:{input_dim}') 
-          #   self.logger.info(f'train_labels_qpm:{labels}')
+          # Save the results to a log file.
+          if self.logger is not None:
+            self.logger.info(f'umap_result:{umap_result.tolist()}')   
+            self.logger.info(f'input_dim:{input_dim}') 
+            self.logger.info(f'train_labels_qpm:{labels}')
           
           break
 

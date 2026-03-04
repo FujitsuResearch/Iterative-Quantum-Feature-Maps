@@ -24,22 +24,7 @@ RECORD=0
 WEIGHT=0.0
 LABELS='[0,1,2,3,4,5,6,7,8,9]' # choose labels of Fashion-MNIST
 N_LABELS=10
-# ANCHOR='rotation_one_data_per_data' 
 ANCHOR='no_use' 
-
-<< COMMENTOUT
-ANCHOR options
-
-rand(default): random anchor
-
-rotation_all_data: 
-  ･During the training phase, for all training data, we use data rotated by 90 degrees as their respective anchors.
-  ･During the testing phase, only one data point randomly selected from each label in the training data, which has been rotated by 90 degrees, will serve as the anchor.
-
-rotation_one_data_per_label:
-  ･Only one data point randomly selected from each label in the training data, which has been rotated by 90 degrees, will serve as the anchor.
-  ･The same anchor is used for both training and testing per label.
-COMMENTOUT
 
 for NTRAIN in 5000 
 do

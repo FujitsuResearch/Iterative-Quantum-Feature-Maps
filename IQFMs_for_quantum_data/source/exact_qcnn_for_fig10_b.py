@@ -10,8 +10,11 @@ import torchquantum.functional as tqf
 from torchquantum.measurement import expval_joint_analytical, expval_joint_sampling
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 from utils import *
+
+import pickle
 
 def _set_qdevice_state(qdev: tq.QuantumDevice, states: torch.Tensor) -> None:
 
@@ -72,28 +75,31 @@ class ExactQCNN9Open(nn.Module):
 
         # Cache kept qubits for N=9, d=1
         self.blocks = [(0,1,2), (3,4,5), (6,7,8)]
-        self.kept = [1,4,7]
+        self.kept = [1,4,7] 
 
     def _apply_convolution(self, qdev: tq.QuantumDevice) -> None:
         n = self.cfg.n_wires
 
+        # Nearest-neighbor CZ in two layers (brickwork), matching the diagram.
         for i in range(0, n - 1, 2):
             tqf.cz(qdev, wires=[i, i + 1])
         for i in range(1, n - 1, 2):
             tqf.cz(qdev, wires=[i, i + 1])
 
+        # Long-range CZ between neighboring kept qubits (distance 3 in the original chain)
         for a, b in zip(self.kept[:-1], self.kept[1:]):
             tqf.cz(qdev, wires=[a, b])
 
+        # block = (left, mid, right)
         for left, mid, right in self.blocks:
             apply_toffoli_x_controls(qdev, left, right, mid)
 
         for i in range(2, n - 1, 3):
             tqf.swap(qdev, wires=[i, i + 1])
 
+
+    # pooling
     def _apply_pooling(self, qdev: tq.QuantumDevice) -> None:
-        """Apply the pooling part (orange P layer in Fig.2(b)).
-        """
         n = self.cfg.n_wires
 
         for i in range(0, n - 1, 3):
@@ -104,6 +110,7 @@ class ExactQCNN9Open(nn.Module):
             tqf.h(qdev, wires=i)
             tqf.cz(qdev, wires=[i, i - 1])
 
+    #FC
     def _apply_fc(self, qdev: tq.QuantumDevice) -> None:
         for a, b in zip(self.kept[:-1], self.kept[1:]):
             tqf.cz(qdev, wires=[a, b])
@@ -119,6 +126,7 @@ class ExactQCNN9Open(nn.Module):
         qdev = tq.QuantumDevice(n_wires=self.cfg.n_wires, bsz=bsz, device=states.device)
         _set_qdevice_state(qdev, states)
 
+        # Apply circuit: (C -> P) x d  with d=1 here, then FC
         self._apply_convolution(qdev)
         self._apply_pooling(qdev)
         self._apply_fc(qdev)
@@ -128,6 +136,7 @@ class ExactQCNN9Open(nn.Module):
         obs_list = [self._observable_str_for_wire(w) for w in readout_wires]
 
         def _measure_once() -> torch.Tensor:
+            # returns shape (bsz,) if one obs, else (bsz, len(obs_list))
             vals = []
 
             for obs in obs_list:
@@ -144,43 +153,87 @@ class ExactQCNN9Open(nn.Module):
 
         return _measure_once()
 
+
+class GroundStatePKLDataset(Dataset):
+    def __init__(self, pkl_path, device="cpu"):
+        with open(pkl_path, "rb") as f:
+            self.data = pickle.load(f)  # list of dicts: h1,h2,energy,ground_state
+        self.device = device
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        # ground_state: numpy complex vector (2**n,)
+        gs = item["ground_state"]
+        # torchquantum expects complex state tensor; batch dimension will be added by DataLoader
+        x = torch.tensor(gs, dtype=torch.complex64)
+        h2 = float(item["h2"])
+        return x, h2 
+
+
 if __name__ == "__main__":
     n = 9
-    train_dat_type = 'all'
-    test_dat_type = 'all'
-    _, test_loader = read_IsingCluster_data_open(n, train_dat_type, test_dat_type=test_dat_type)
+    device = "cpu"
 
-    device ="cpu"
+    data_dir = "../data/phase_detection_python_open_9qubit_h1_0.5"
+    data_prefix = "ground_nq_9_h1_0.5000_h2_50pts"
+    pkl_path = os.path.join(data_dir, f"{data_prefix}_data.pkl")
+
+    test_ds = GroundStatePKLDataset(pkl_path, device=device)
+    test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
 
     model = ExactQCNN9Open(ExactQCNNConfig())
 
     seed_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    shot_list = [10, 100, 500, 1000]
+    shot_list = [10, 1000]
+
+    results_per_shot = {}
 
     for n_shots in shot_list:
         print(f"\n===== n_shots = {n_shots} =====")
-        acc_trials = []
+
+        all_outputs = [] 
+        h2_list_ref = None
 
         for seed in seed_list:
             np.random.seed(seed)
             torch.manual_seed(seed)
             random.seed(seed)
 
-            correct = 0
-            total = 0
+            outputs = []
+            h2_list = []
+            for x, h2 in test_loader:
+                y_trial = model(x, n_shots=n_shots)  
+                outputs.append(float(y_trial.item()))
+                h2_list.append(float(h2.item()))
 
-            for x, y in test_loader:
-                y_trial = model(x, n_shots=n_shots)
-                pred = (y_trial > 0.5).long()
+            print(f"seed={seed}  outputs(head)={outputs[:5]}")
 
-                correct += (pred == y).sum().item()
-                total += y.numel()
+            all_outputs.append(outputs)
 
-            acc = correct / total
-            acc_trials.append(acc)
+            if h2_list_ref is None:
+                h2_list_ref = h2_list
 
-        acc_mean = float(np.mean(acc_trials))
-        acc_std = float(np.std(acc_trials, ddof=1)) if len(acc_trials) > 1 else 0.0
-        print('acc_trials', acc_trials)
-        print('mean accuracy:',acc_mean)
-        print('std accuracy:', acc_std)
+        # list → numpy array: (num_seeds, num_data)
+        all_outputs_np = np.array(all_outputs)  # shape (num_seeds, num_data)
+
+        mean_outputs_np = np.mean(all_outputs_np, axis=0)  # shape (num_data,)
+        std_outputs_np = np.std(all_outputs_np, axis=0, ddof=1) # shape (num_data,)
+
+        results_per_shot[n_shots] = {
+            "h2_list": np.array(h2_list_ref),
+            "mean_outputs": mean_outputs_np,
+            "std_outputs": std_outputs_np,
+            "all_outputs": all_outputs_np,
+        }
+
+        print(f"[n_shots={n_shots}] mean_outputs(head)={mean_outputs_np[:5].tolist()}")
+        print(f"[n_shots={n_shots}] std_outputs(head)={std_outputs_np[:5].tolist()}")
+
+    save_path = "../post_process/exact_qcnn_results_per_shot.pkl"
+    with open(save_path, "wb") as f:
+        pickle.dump(results_per_shot, f)
+
+    print(f"Saved results_per_shot to {save_path}")
