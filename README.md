@@ -10,27 +10,27 @@ The repository is organized as follows:
 
 ```text
 Iterative-Quantum-Feature-Maps/
-├── IQFMs_for_classical_data/                             # Folder for classical data 
-│   ├── postprocess                                       # Functions for plotting and analyzing experimental results
-│   ├── runscripts          　                            # Shell scripts to execute the experiments
-│   └── source                                            # Source code for IQFMs and classical NN
+├── IQFMs_for_classical_data/                           # Folder for classical data 
+│   ├── postprocess                                     # Functions for plotting and analyzing experimental results
+│   ├── runscripts          　                          # Shell scripts to execute the experiments
+│   └── source                                          # Source code for IQFMs and classical NN
 │
-├── IQFMs_for_quantum_data/                               # Folder for quantum data 
+├── IQFMs_for_quantum_data/                             # Folder for quantum data 
 │   ├── data
-│   │　   ├── phase_detection_gch_nq_8                    # TaskB data
-│   │　   ├── phase_detection_python_open_9qubit          # TaskA data (for Fig.10(a))
-│   │　   ├── phase_detection_python_open_9qubit_h1_0.5   # TaskA data (for Fig.10(b))
-│   │　   └── phase_detection_python_periodic             # TaskA data (for other figures)
-│   ├── post_process                                      # Functions for plotting and analyzing experimental results 
-│   ├── runscripts                                        # Shell scripts to execute the experiments
-│   └── source                                            # Source code for IQFMs, QCNN, exactQCNN
+│   │　 ├── phase_detection_gch_nq_8                    # TaskB data
+│   │　 ├── phase_detection_python_open_9qubit          # TaskA data (for Fig.10(a))
+│   │　 ├── phase_detection_python_open_9qubit_h1_0.5   # TaskA data (for Fig.10(b))
+│   │　 └── phase_detection_python_periodic             # TaskA data (for other figures)
+│   ├── post_process                                    # Functions for plotting and analyzing experimental results 
+│   ├── runscripts                                      # Shell scripts to execute the experiments
+│   └── source                                          # Source code for IQFMs, QCNN, exactQCNN
 │
-└── shadow_kernel/                                        # Folder for shadow kernel method 
-    ├── results                                           # Results of quantum phase classification
-    ├── Data_dmrg.jl                                      # Ground state calculation with DMRG & obtain classical shadows
-    ├── Model_SK.jl                                       # Calculate the Gram matrix of the shadow kernel from the classical shadow 
-    ├── SVM_SK.ipynb                                      # Quantum phase classification with SVM from Gram matrix
-    └── my_cs_tools_v250625.jl                            # A file that summarizes functions related to classic shadows
+└── shadow_kernel/                                      # Folder for shadow kernel method 
+    ├── results                                         # Results of quantum phase classification
+    ├── Data_dmrg.jl                                    # Ground state calculation with DMRG & obtain classical shadows
+    ├── Model_SK.jl                                     # Calculate the Gram matrix of the shadow kernel from the classical shadow 
+    ├── SVM_SK.ipynb                                    # Quantum phase classification with SVM from Gram matrix
+    └── my_cs_tools_v250625.jl                          # A file that summarizes functions related to classic shadows
 ```
 
 # Installation
