@@ -23,3 +23,24 @@ source .venv/bin/activate
 # Install packages
 pip install -r requirements.txt
 ```
+
+
+## Installation (Notes for Miniconda / conda users)
+
+If you prefer to use Miniconda, you can create and activate the environment as follows:
+
+```bash
+conda create -n .venv python=3.10.12
+conda activate .venv
+pip install -r requirements.txt
+```
+
+In some environments, running pip install -r requirements.txt may result in the following error:
+
+ModuleNotFoundError: No module named 'pkg_resources'
+
+If this happens, downgrading setuptools may resolve the issue:
+```bash
+pip install "setuptools<80" -v
+```
+After that, please run pip install -r requirements.txt again.
