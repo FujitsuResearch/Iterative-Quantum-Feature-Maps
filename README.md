@@ -71,8 +71,6 @@ If this happens, downgrading setuptools may resolve the issue:
 ```bash
 pip install "setuptools<80" -v
 ```
-After that, please run pip install -r requirements.txt again.
-
 
 # Running the Experiments
 
